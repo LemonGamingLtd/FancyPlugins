@@ -156,7 +156,7 @@ public final class HologramCMD extends Command {
 
             final var usingNpcs = PluginUtils.isFancyNpcsEnabled();
 
-            List<String> suggestions = new ArrayList<>(Arrays.asList("position", "moveHere", "center", "moveTo", "rotate", "rotatepitch", "billboard", "scale", "translate", "visibilityDistance", "visibility", "shadowRadius", "shadowStrength", "brightness", usingNpcs ? "linkWithNpc" : "", usingNpcs ? "unlinkWithNpc" : ""));
+            List<String> suggestions = new ArrayList<>(Arrays.asList("position", "moveHere", "center", "moveTo", "rotate", "rotatepitch", "billboard", "glowColorOverride", "scale", "translate", "visibilityDistance", "visibility", "shadowRadius", "shadowStrength", "brightness", usingNpcs ? "linkWithNpc" : "", usingNpcs ? "unlinkWithNpc" : ""));
             suggestions.addAll(type.getCommands());
 
             return suggestions.stream().filter(input -> input.toLowerCase().startsWith(args[2].toLowerCase(Locale.ROOT))).toList();
@@ -328,6 +328,7 @@ public final class HologramCMD extends Command {
             case "shadowradius" -> new ShadowRadiusCMD().run(player, hologram, args);
             case "shadowstrength" -> new ShadowStrengthCMD().run(player, hologram, args);
             case "brightness" -> new BrightnessCMD().run(player, hologram, args);
+            case "glowcoloroverride" -> new GlowColorOverrideCMD().run(player, hologram, args);
 
             // text data
             case "background" -> new BackgroundCMD().run(player, hologram, args);

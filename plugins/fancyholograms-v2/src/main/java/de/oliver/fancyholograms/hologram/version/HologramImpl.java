@@ -124,6 +124,12 @@ public final class HologramImpl extends Hologram {
             fsDisplay.setShadowStrength(displayData.getShadowStrength());
 
             fsDisplay.setViewRange(displayData.getVisibilityDistance());
+
+            if (displayData.getGlowColorOverride() != null) {
+                System.out.println("INITIALIZED GLOW COLOR OVERRIDE: " + displayData.getGlowColorOverride());
+                fsDisplay.setGlowColorOverride(displayData.getGlowColorOverride().asARGB());
+                fsDisplay.setGlowingTag(true);
+            }
         }
     }
 

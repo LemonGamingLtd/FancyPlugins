@@ -1,10 +1,12 @@
 package de.oliver.fancyholograms.api.data;
 
 import de.oliver.fancyholograms.api.hologram.HologramType;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Display;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.Locale;
@@ -23,6 +25,7 @@ public class DisplayHologramData extends HologramData {
     private Vector3f scale = new Vector3f(DEFAULT_SCALE);
     private Vector3f translation = new Vector3f(DEFAULT_TRANSLATION);
     private Display.Brightness brightness;
+    private Color glowColorOverride;
     private float shadowRadius = DEFAULT_SHADOW_RADIUS;
     private float shadowStrength = DEFAULT_SHADOW_STRENGTH;
     private int interpolationDuration = DEFAULT_INTERPOLATION_DURATION;
@@ -35,6 +38,19 @@ public class DisplayHologramData extends HologramData {
      */
     public DisplayHologramData(String name, HologramType type, Location location) {
         super(name, type, location);
+    }
+
+    public DisplayHologramData setGlowColorOverride(@Nullable Color glowColorOverride) {
+        if (!Objects.equals(this.glowColorOverride, glowColorOverride)) {
+            this.glowColorOverride = glowColorOverride;
+            setHasChanges(true);
+        }
+
+        return this;
+    }
+
+    public Color getGlowColorOverride() {
+        return glowColorOverride;
     }
 
     public Display.Billboard getBillboard() {
@@ -166,6 +182,10 @@ public class DisplayHologramData extends HologramData {
             );
         }
 
+        if (section.isInt("glow_color_override")) {
+            glowColorOverride = Color.fromARGB(section.getInt("glow_color_override"));
+        }
+
         return true;
     }
 
@@ -185,7 +205,7 @@ public class DisplayHologramData extends HologramData {
             section.set("block_brightness", brightness.getBlockLight());
             section.set("sky_brightness", brightness.getSkyLight());
         }
-
+        section.set("glow_color_override", glowColorOverride != null ? glowColorOverride.asARGB() : null);
         section.set("billboard", billboard != Display.Billboard.CENTER ? billboard.name().toLowerCase(Locale.ROOT) : null);
 
         return true;
@@ -199,6 +219,7 @@ public class DisplayHologramData extends HologramData {
                 .setShadowRadius(this.getShadowRadius())
                 .setShadowStrength(this.getShadowStrength())
                 .setBillboard(this.getBillboard())
+                .setGlowColorOverride(this.getGlowColorOverride())
                 .setTranslation(this.getTranslation())
                 .setBrightness(this.getBrightness())
                 .setVisibilityDistance(this.getVisibilityDistance())

@@ -75,6 +75,7 @@ public final class HologramUpdateEvent extends HologramEvent {
         SCALE,
         TRANSLATION,
         BILLBOARD,
+        GLOW_COLOR_OVERRIDE,
         BACKGROUND,
         TEXT_SHADOW,
         TEXT_ALIGNMENT,

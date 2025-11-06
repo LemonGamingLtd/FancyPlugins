@@ -45,6 +45,7 @@ public class InfoCMD implements Subcommand {
             MessageHelper.info(player, "Billboard: <gray>" + displayData.getBillboard().name());
             MessageHelper.info(player, "Shadow radius: <gray>" + displayData.getShadowRadius());
             MessageHelper.info(player, "Shadow strength: <gray>" + displayData.getShadowStrength());
+            MessageHelper.info(player, "Glow Color Override: <gray>" + displayData.getGlowColorOverride());
         }
 
         if (data.getLinkedNpcName() != null) {

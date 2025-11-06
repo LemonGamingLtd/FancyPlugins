@@ -60,6 +60,7 @@ public class BlockHologramData extends DisplayHologramData {
                 .setShadowRadius(this.getShadowRadius())
                 .setShadowStrength(this.getShadowStrength())
                 .setBillboard(this.getBillboard())
+                .setGlowColorOverride(this.getGlowColorOverride())
                 .setTranslation(this.getTranslation())
                 .setBrightness(this.getBrightness())
                 .setVisibilityDistance(getVisibilityDistance())

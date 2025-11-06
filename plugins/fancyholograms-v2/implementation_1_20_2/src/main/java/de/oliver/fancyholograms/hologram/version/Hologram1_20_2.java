@@ -170,6 +170,12 @@ public final class Hologram1_20_2 extends Hologram {
                 display.setBrightnessOverride(new Brightness(displayData.getBrightness().getBlockLight(), displayData.getBrightness().getSkyLight()));
             }
 
+            // glow color override
+            if (displayData.getGlowColorOverride() != null) {
+                display.setGlowColorOverride(displayData.getGlowColorOverride().asARGB());
+                display.setGlowingTag(true);
+            }
+
             // entity scale AND MORE!
             display.setTransformation(new Transformation(
                     displayData.getTranslation(),

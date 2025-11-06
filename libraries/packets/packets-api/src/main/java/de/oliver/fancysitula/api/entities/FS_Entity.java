@@ -33,6 +33,14 @@ public class FS_Entity {
 
     protected int data = 0;
 
+    protected static final int FLAG_ONFIRE = 0;
+    protected static final int FLAG_SHIFT_KEY_DOWN = 1;
+    protected static final int FLAG_SPRINTING = 3;
+    protected static final int FLAG_SWIMMING = 4;
+    protected static final int FLAG_INVISIBLE = 5;
+    protected static final int FLAG_GLOWING = 6;
+    protected static final int FLAG_FALL_FLYING = 7;
+
     protected FS_ClientboundSetEntityDataPacket.EntityData sharedFlagsData = new FS_ClientboundSetEntityDataPacket.EntityData(FS_EntityData.SHARED_FLAGS, null);
     protected FS_ClientboundSetEntityDataPacket.EntityData airSupplyData = new FS_ClientboundSetEntityDataPacket.EntityData(FS_EntityData.AIR_SUPPLY, null);
     protected FS_ClientboundSetEntityDataPacket.EntityData customNameData = new FS_ClientboundSetEntityDataPacket.EntityData(FS_EntityData.CUSTOM_NAME, null);
@@ -46,6 +54,26 @@ public class FS_Entity {
     }
 
     // Entity data
+    public final void setGlowingTag(boolean hasGlowingTag) {
+        this.setSharedFlag(FLAG_GLOWING, hasGlowingTag);
+    }
+
+    public boolean isGlowing() {
+        return getSharedFlag(FLAG_GLOWING);
+    }
+
+    public void setSharedFlag(int flag, boolean set) {
+        byte data = getSharedFlags();
+        if (set) {
+            setSharedFlags((byte) (data | 1 << flag));
+        } else {
+            setSharedFlags((byte) (data & ~(1 << flag)));
+        }
+    }
+
+    public boolean getSharedFlag(int flag) {
+        return (getSharedFlags() & 1 << flag) != 0;
+    }
 
     public byte getSharedFlags() {
         return (byte) sharedFlagsData.getValue();
