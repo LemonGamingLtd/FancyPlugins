@@ -63,6 +63,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.bukkit.BukkitLamp;
+import revxrsal.commands.bukkit.BukkitLampConfig;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 
 import java.io.File;
@@ -293,8 +294,13 @@ public class FancyHologramsPlugin extends JavaPlugin implements FancyHolograms {
     }
 
     private void registerCommands() {
+        // On Arclight the Paper brigadier bridge NPEs (CommandSource.NULL has no server) when the help map
+        // checks command requirements during startup, so register plain Bukkit commands there
+        BukkitLampConfig<BukkitCommandActor> lampConfig = BukkitLampConfig.<BukkitCommandActor>builder(this)
+                .disableBrigadier(Bukkit.getName().equalsIgnoreCase("Arclight"))
+                .build();
         Lamp.Builder<BukkitCommandActor> lampBuilder = BukkitLamp
-                .builder(this);
+                .builder(lampConfig);
 
         // conditions
         lampBuilder
@@ -379,7 +385,10 @@ public class FancyHologramsPlugin extends JavaPlugin implements FancyHolograms {
     private void registerListeners() {
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getPluginManager().registerEvents(new WorldLoadedListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerLoadedListener(), this);
+        // PlayerClientLoadedWorldEvent only exists on 1.21.4+, older servers rely on the join respawn
+        if (isClassPresent("io.papermc.paper.event.player.PlayerClientLoadedWorldEvent")) {
+            getServer().getPluginManager().registerEvents(new PlayerLoadedListener(), this);
+        }
 
         if (PluginUtils.isFancyNpcsEnabled()) {
             getServer().getPluginManager().registerEvents(new NpcListener(this), this);
@@ -387,6 +396,15 @@ public class FancyHologramsPlugin extends JavaPlugin implements FancyHolograms {
 
         if (PluginUtils.isFloodgateEnabled()) {
             getServer().getPluginManager().registerEvents(new BedrockPlayerListener(), this);
+        }
+    }
+
+    private static boolean isClassPresent(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 

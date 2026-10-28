@@ -163,7 +163,11 @@ public final class HologramImpl extends Hologram {
         // location data
         final Location location = data.getLocation();
         if (FancyHologramsPlugin.get().getFHConfiguration().isHologramRotationImprovementEnabled()) {
-            fsDisplay.setLocation(location.clone().setRotation(0, 0));
+            // Location#setRotation doesn't exist on 1.21.1
+            final Location unrotated = location.clone();
+            unrotated.setYaw(0);
+            unrotated.setPitch(0);
+            fsDisplay.setLocation(unrotated);
 
             // set yaw and pitch
             HologramRotation rot = new HologramRotation(location.getYaw() + 180, location.getPitch(), 0);

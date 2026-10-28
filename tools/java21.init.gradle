@@ -1,0 +1,31 @@
+// Builds everything as Java 21 bytecode, e.g. for Cobblemon (Arclight 1.21.1 on Java 21):
+//   JAVA_HOME=<jdk 25> ./gradlew --init-script tools/java21.init.gradle :plugins:fancyholograms:shadowJar
+allprojects {
+    afterEvaluate {
+        plugins.withId('java') {
+            if (plugins.hasPlugin('io.papermc.paperweight.userdev')) {
+                // keep Gradle resolving the dev bundle as Java 25 and only tell javac to emit 21
+                tasks.withType(JavaCompile).configureEach {
+                    options.release.set((Integer) null)
+                    // an argument provider, because Gradle reads --release out of compilerArgs
+                    options.compilerArgumentProviders.add({ ['--release', '21'] } as CommandLineArgumentProvider)
+                }
+            } else {
+                // paper-api 26.x is published as Java 25
+                java { disableAutoTargetJvm() }
+                tasks.withType(JavaCompile).configureEach { options.release = 21 }
+            }
+        }
+    }
+}
+
+// the 1.21.9 / 1.21.11 dev bundles declare adventure-text-serializer-ansi without a version
+allprojects {
+    configurations.configureEach {
+        resolutionStrategy.eachDependency {
+            if (requested.group == 'net.kyori' && requested.name == 'adventure-text-serializer-ansi' && !requested.version) {
+                useVersion('4.25.0')
+            }
+        }
+    }
+}

@@ -17,6 +17,8 @@ public enum ServerVersion {
     v1_21_8("1.21.8", 772),
     v1_21_7("1.21.7", 772),
     v1_21_6("1.21.6", 771),
+    v1_21_1("1.21.1", 767),
+    v1_21("1.21", 767),
     ;
 
     private final String version;

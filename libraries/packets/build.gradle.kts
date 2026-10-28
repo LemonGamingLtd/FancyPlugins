@@ -22,6 +22,7 @@ dependencies {
     implementation(project(":libraries:packets:implementations:1_21_9"))
     implementation(project(":libraries:packets:implementations:1_21_6"))
     implementation(project(":libraries:packets:implementations:1_21_5"))
+    implementation(project(":libraries:packets:implementations:1_21_1"))
     implementation("de.oliver.FancyAnalytics:logger:0.0.10")
 }
 
