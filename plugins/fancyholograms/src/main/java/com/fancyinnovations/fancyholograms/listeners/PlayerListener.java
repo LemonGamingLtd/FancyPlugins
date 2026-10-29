@@ -44,7 +44,8 @@ public final class PlayerListener implements Listener {
     public void onJoin(@NotNull final PlayerJoinEvent event) {
         FancyHologramsPlugin.get().getHologramThread().schedule(() -> {
                     for (final var hologram : this.plugin.getRegistry().getAll()) {
-                        hologram.despawnFrom(event.getPlayer());
+                        // a joining client has no hologram entities yet, and on Cobblemon (Arclight) a remove
+                        // packet sent right before the add packet for the same entity leaves it invisible
                         hologram.removeViewer(event.getPlayer().getUniqueId());
                         FancyHologramsPlugin.get().getController().refreshHologram(hologram, event.getPlayer());
                     }
@@ -72,7 +73,7 @@ public final class PlayerListener implements Listener {
     public void onRespawn(@NotNull final PlayerRespawnEvent event) {
         FancyHologramsPlugin.get().getHologramThread().schedule(() -> {
                     for (final var hologram : this.plugin.getRegistry().getAll()) {
-                        hologram.despawnFrom(event.getPlayer());
+                        // no remove packet first, see onJoin (the add packet replaces an existing entity anyway)
                         hologram.removeViewer(event.getPlayer().getUniqueId());
                         FancyHologramsPlugin.get().getController().refreshHologram(hologram, event.getPlayer());
                     }

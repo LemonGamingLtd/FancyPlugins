@@ -20,6 +20,7 @@ import revxrsal.commands.bukkit.annotation.CommandPermission;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public final class BlockStateCMD extends FancyContext {
 
@@ -90,7 +91,8 @@ public final class BlockStateCMD extends FancyContext {
             }
 
             hologram.despawnFrom(viewer);
-            hologram.spawnTo(viewer);
+            // on Cobblemon (Arclight) an add packet right after the remove packet for the same entity leaves it invisible
+            plugin.getHologramThread().schedule(() -> hologram.spawnTo(viewer), 100, TimeUnit.MILLISECONDS);
         }
 
         if (config.isSaveOnChangedEnabled()) {
