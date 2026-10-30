@@ -37,10 +37,14 @@ public class HologramControllerImpl implements HologramController {
         hologram.spawnTo(player);
 
         if (ServerSoftware.isFolia() && FancyHologramsPlugin.get().getFHConfiguration().isFoliaVisibilityFixEnabled()) {
-            FancyHologramsPlugin.get().getHologramThread().schedule(() -> {
+            // respawn on the player's region thread (not the hologram thread) so it can't race other spawns
+            player.getScheduler().runDelayed(FancyHologramsPlugin.get(), task -> {
+                if (!hologram.isViewer(player)) {
+                    return;
+                }
                 hologram.despawnFrom(player);
                 hologram.spawnTo(player);
-            }, 100, TimeUnit.MILLISECONDS);
+            }, null, 2L);
         }
     }
 

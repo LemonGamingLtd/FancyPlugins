@@ -32,6 +32,7 @@ import com.fancyinnovations.fancyholograms.trait.builtin.FileContentTrait;
 import com.fancyinnovations.fancyholograms.trait.builtin.InteractionTrait;
 import com.fancyinnovations.fancyholograms.trait.builtin.MultiplePagesTrait;
 import com.fancyinnovations.fancyholograms.util.PluginUtils;
+import com.fancyinnovations.fancyholograms.util.LoggingScheduledExecutor;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import de.oliver.fancyanalytics.logger.ExtendedFancyLogger;
@@ -131,10 +132,11 @@ public class FancyHologramsPlugin extends JavaPlugin implements FancyHolograms {
 
         metrics = new FHMetrics();
 
-        hologramThread = Executors.newSingleThreadScheduledExecutor(
+        hologramThread = new LoggingScheduledExecutor(
                 new ThreadFactoryBuilder()
                         .setNameFormat("FancyHolograms-Hologram")
-                        .build()
+                        .build(),
+                this::getLogger
         );
 
         storageThread = Executors.newSingleThreadExecutor(

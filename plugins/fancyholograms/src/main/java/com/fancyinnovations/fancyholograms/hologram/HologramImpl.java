@@ -24,7 +24,7 @@ import org.joml.Quaternionf;
 public final class HologramImpl extends Hologram {
 
     private final long minSyncIntervalMs = FancyHologramsPlugin.get().getFHConfiguration().getHologramUpdateInterval();
-    private FS_Display fsDisplay;
+    private volatile FS_Display fsDisplay;
     private long lastSyncTime = 0L;
 
     public HologramImpl(@NotNull final HologramData data) {
@@ -33,17 +33,24 @@ public final class HologramImpl extends Hologram {
         createFsDisplay();
     }
 
-    private void createFsDisplay() {
+    // synchronized: on Folia this is called lazily from several region threads at once
+    private synchronized void createFsDisplay() {
+        if (this.fsDisplay != null) {
+            return;
+        }
+
         final var location = data.getLocation();
         if (!location.isWorldLoaded()) {
             return;
         }
 
-        switch (data.getType()) {
-            case TEXT -> this.fsDisplay = new FS_TextDisplay();
-            case ITEM -> this.fsDisplay = new FS_ItemDisplay();
-            case BLOCK -> this.fsDisplay = new FS_BlockDisplay();
-        }
+        final FS_Display display = switch (data.getType()) {
+            case TEXT -> new FS_TextDisplay();
+            case ITEM -> new FS_ItemDisplay();
+            case BLOCK -> new FS_BlockDisplay();
+        };
+        display.setLocation(location); // spawn at the hologram instead of 0,0,0
+        this.fsDisplay = display;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.fancyinnovations.fancyholograms.listeners;
 
 import com.fancyinnovations.fancyholograms.api.hologram.Hologram;
 import com.fancyinnovations.fancyholograms.main.FancyHologramsPlugin;
+import com.fancyinnovations.fancyholograms.util.FoliaSchedulerHelper;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -40,13 +41,15 @@ public final class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(@NotNull final PlayerJoinEvent event) {
-        FancyHologramsPlugin.get().getHologramThread().schedule(() -> {
+        // on Folia this must run on the player's region thread, where the refresh task spawns holograms,
+        // otherwise a spawn can land between the despawn and removeViewer and the hologram stays invisible
+        FancyHologramsPlugin.get().getHologramThread().schedule(() -> FoliaSchedulerHelper.playerScheduler(event.getPlayer(), () -> {
                     for (final var hologram : this.plugin.getRegistry().getAll()) {
                         hologram.despawnFrom(event.getPlayer());
                         hologram.removeViewer(event.getPlayer().getUniqueId());
                         FancyHologramsPlugin.get().getController().refreshHologram(hologram, event.getPlayer());
                     }
-                },
+                }),
                 FancyHologramsPlugin.get().getHologramConfiguration().getSpawnDelayOnJoin(),
                 TimeUnit.MILLISECONDS
         );
@@ -77,12 +80,12 @@ public final class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldChange(@NotNull final PlayerChangedWorldEvent event) {
-        FancyHologramsPlugin.get().getHologramThread().submit(() -> {
+        FancyHologramsPlugin.get().getHologramThread().submit(() -> FoliaSchedulerHelper.playerScheduler(event.getPlayer(), () -> {
             for (final Hologram hologram : this.plugin.getRegistry().getAll()) {
                 hologram.removeViewer(event.getPlayer().getUniqueId());
                 FancyHologramsPlugin.get().getController().refreshHologram(hologram, event.getPlayer());
             }
-        });
+        }));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -10,12 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FS_Entity {
 
-    private static int entityCount = Integer.MAX_VALUE / 2;
+    private static final AtomicInteger entityCount = new AtomicInteger(Integer.MAX_VALUE / 2);
 
-    protected int id = entityCount++;
+    protected int id = entityCount.getAndIncrement();
     protected UUID uuid = UUID.randomUUID();
     protected EntityType type;
 
