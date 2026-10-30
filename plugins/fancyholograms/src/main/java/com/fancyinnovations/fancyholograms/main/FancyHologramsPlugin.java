@@ -10,16 +10,12 @@ import com.fancyinnovations.fancyholograms.api.trait.HologramTraitRegistry;
 import com.fancyinnovations.fancyholograms.backup.BackupService;
 import com.fancyinnovations.fancyholograms.commands.lampCommands.conditions.HologramTraitCondition;
 import com.fancyinnovations.fancyholograms.commands.lampCommands.conditions.HologramTypeCondition;
-import com.fancyinnovations.fancyholograms.commands.lampCommands.fancyholograms.BackupCMD;
-import com.fancyinnovations.fancyholograms.commands.lampCommands.fancyholograms.ConfigCMD;
-import com.fancyinnovations.fancyholograms.commands.lampCommands.fancyholograms.StorageCMD;
-import com.fancyinnovations.fancyholograms.commands.lampCommands.fancyholograms.VersionCMD;
-import com.fancyinnovations.fancyholograms.commands.lampCommands.hologram.*;
-import com.fancyinnovations.fancyholograms.commands.lampCommands.hologram.edit.*;
 import com.fancyinnovations.fancyholograms.commands.lampCommands.traits.FileContentTraitCMD;
 import com.fancyinnovations.fancyholograms.commands.lampCommands.traits.InteractionTraitCMD;
 import com.fancyinnovations.fancyholograms.commands.lampCommands.traits.MultiplePagesTraitCMD;
 import com.fancyinnovations.fancyholograms.commands.lampCommands.types.*;
+import com.fancyinnovations.fancyholograms.commands.oldCommands.FancyHologramsCMD;
+import com.fancyinnovations.fancyholograms.commands.oldCommands.HologramCMD;
 import com.fancyinnovations.fancyholograms.config.FHConfiguration;
 import com.fancyinnovations.fancyholograms.controller.HologramControllerImpl;
 import com.fancyinnovations.fancyholograms.converter.FHConversionRegistry;
@@ -58,6 +54,7 @@ import de.oliver.fancysitula.api.utils.ServerVersion;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.command.Command;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -293,6 +290,13 @@ public class FancyHologramsPlugin extends JavaPlugin implements FancyHolograms {
     }
 
     private void registerCommands() {
+        // /hologram (with its aliases) and /fancyholograms use the old commands
+        if (configuration.isRegisterCommands()) {
+            List<Command> commands = List.of(new HologramCMD(this), new FancyHologramsCMD(this));
+            commands.forEach(command -> getServer().getCommandMap().register("fancyholograms", command));
+        }
+
+        // lamp is only used for the commands without an old equivalent
         Lamp.Builder<BukkitCommandActor> lampBuilder = BukkitLamp
                 .builder(this);
 
@@ -320,53 +324,6 @@ public class FancyHologramsPlugin extends JavaPlugin implements FancyHolograms {
                 .exceptionHandler(ColorCommandType.INSTANCE);
 
         Lamp<BukkitCommandActor> lamp = lampBuilder.build();
-
-        // fancyholograms commands
-        lamp.register(VersionCMD.INSTANCE);
-        lamp.register(ConfigCMD.INSTANCE);
-        lamp.register(StorageCMD.INSTANCE);
-        lamp.register(BackupCMD.INSTANCE);
-
-        // hologram commands
-        lamp.register(CreateCMD.INSTANCE);
-        lamp.register(SelectCMD.INSTANCE);
-        lamp.register(TraitCMD.INSTANCE);
-        lamp.register(MoveUpCMD.INSTANCE);
-        lamp.register(MoveDownCMD.INSTANCE);
-        lamp.register(SwapLinesCMD.INSTANCE);
-        lamp.register(GlowingCMD.INSTANCE);
-        lamp.register(RotationCMD.INSTANCE);
-        lamp.register(UpdateTextIntervalCMD.INSTANCE);
-        lamp.register(BackgroundCMD.INSTANCE);
-        lamp.register(BillboardCMD.INSTANCE);
-        lamp.register(BlockCMD.INSTANCE);
-        lamp.register(BrightnessCMD.INSTANCE);
-        lamp.register(CenterCMD.INSTANCE);
-        lamp.register(CopyCMD.INSTANCE);
-        lamp.register(InfoCMD.INSTANCE);
-        lamp.register(ListCMD.INSTANCE);
-        lamp.register(NearbyCMD.INSTANCE);
-        lamp.register(RemoveCMD.INSTANCE);
-        lamp.register(TeleportCMD.INSTANCE);
-        lamp.register(MoveHereCMD.INSTANCE);
-        lamp.register(MoveToCMD.INSTANCE);
-        lamp.register(ItemCMD.INSTANCE);
-        lamp.register(LinkWithNpcCMD.INSTANCE);
-        lamp.register(UnlinkWithNpcCMD.INSTANCE);
-        lamp.register(ScaleCMD.INSTANCE);
-        lamp.register(SeeThroughCMD.INSTANCE);
-        lamp.register(ShadowRadiusCMD.INSTANCE);
-        lamp.register(ShadowStrengthCMD.INSTANCE);
-        lamp.register(TextAlignmentCMD.INSTANCE);
-        lamp.register(TextShadowCMD.INSTANCE);
-        lamp.register(TranslateCMD.INSTANCE);
-        lamp.register(VisibilityCMD.INSTANCE);
-        lamp.register(VisibilityDistanceCMD.INSTANCE);
-        lamp.register(AddLineCMD.INSTANCE);
-        lamp.register(SetLineCMD.INSTANCE);
-        lamp.register(RemoveLineCMD.INSTANCE);
-        lamp.register(AddLineBeforeCMD.INSTANCE);
-        lamp.register(AddLineAfterCMD.INSTANCE);
 
         // hologram trait commands
         lamp.register(MultiplePagesTraitCMD.INSTANCE);
